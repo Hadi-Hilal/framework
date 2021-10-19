@@ -1,0 +1,39 @@
+{
+    "name": "loxi5/loxi5",
+    "description": "Content management system for Laravel Framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hüseyin DURSUN",
+            "email": "support@loxi5.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Loxi5\\Loxi5\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Loxi5\\Loxi5\\Tests\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Loxi5\\Loxi5\\ServiceProvider"
+            ],
+            "aliases": {
+                "Loxi5": "Loxi5\\Loxi5\\Facade"
+            }
+        }
+    }
+}
