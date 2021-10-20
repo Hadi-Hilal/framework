@@ -1,5 +1,5 @@
 {
-    "name": "loxi5/framework",
+    "name": "loxi5/loxi5",
     "description": "Content management system for Laravel Framework",
     "license": "MIT",
     "authors": [
@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Loxi5\\Loxi5\\": "src/"
+            "Loxi5\\Framework\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -21,7 +21,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Loxi5\\Loxi5\\Tests\\": "tests"
+            "Loxi5\\Framework\\Tests\\": "tests"
         }
     },
     "minimum-stability": "dev",
@@ -29,10 +29,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Loxi5\\Loxi5\\ServiceProvider"
+                "Loxi5\\Framework\\ServiceProvider"
             ],
             "aliases": {
-                "Loxi5": "Loxi5\\Loxi5\\Facade"
+                "Loxi5": "Loxi5\\Framework\\Facade"
             }
         }
     }

@@ -1,11 +1,13 @@
 <?php
 
+namespace Loxi5\Framework;
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Modules\Core\Models\Module;
 use Modules\Theme\Models\Theme;
 
-class ServiceProvider extends ServiceProvider
+class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
      * Register services.
