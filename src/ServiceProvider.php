@@ -68,17 +68,31 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot()
     {
-        $modules = Module::where('is_active', true)->orderBy('is_core')->orderBy('folder')->get();
+        try {
+            $modules = Module::where('is_active', true)->orderBy('is_core')->orderBy('folder')->get();
 
-        $default_theme = Theme::where('is_default', true)->first();
+            $default_theme = Theme::where('is_default', true)->first();
 
-        $languages = Language::where('is_active', true)->orderBy('order')->get();
+            $languages = Language::where('is_active', true)->orderBy('order')->get();
 
-        $user_groups = UserGroup::get();
+            $user_groups = UserGroup::get();
 
-        $currencies = Currency::where('is_active', true)->orderBy('order')->get();
+            $currencies = Currency::where('is_active', true)->orderBy('order')->get();
 
-        $countries = Country::where('is_active', true)->orderBy('order')->orderBy('title')->get();
+            $countries = Country::where('is_active', true)->orderBy('order')->orderBy('title')->get();
+        } catch (\Exception $e) {
+            $modules = collect([]);
+
+            $default_theme = collect([]);
+
+            $languages = collect([]);
+
+            $user_groups = collect([]);
+
+            $currencies = collect([]);
+
+            $countries = collect([]);
+        }
 
         $this->app->bind('modules', function () use ($modules) {
             return $modules;
