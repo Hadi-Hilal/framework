@@ -19,53 +19,61 @@ class Frontend extends \Inertia\Middleware
 
     public function share(Request $request)
     {
-        $menu_items = MenuItem::where('position', 'main')
-            ->with(['submenus' => function($query) {
-                $query->where('is_active', 1)
-                    ->whereHas('module', function ($query) {
-                        $query->where('is_active', 1);
-                    })
-                    ->orderBy('order');
-            }])
-            ->whereNull('parent_id')
-            ->where('is_active', 1)
-            ->whereHas('module', function ($query) {
-                $query->where('is_active', 1);
-            })
-            ->orderBy('order')
-            ->get();
+        try {
+            $menu_items = MenuItem::where('position', 'main')
+                ->with(['submenus' => function($query) {
+                    $query->where('is_active', 1)
+                        ->whereHas('module', function ($query) {
+                            $query->where('is_active', 1);
+                        })
+                        ->orderBy('order');
+                }])
+                ->whereNull('parent_id')
+                ->where('is_active', 1)
+                ->whereHas('module', function ($query) {
+                    $query->where('is_active', 1);
+                })
+                ->orderBy('order')
+                ->get();
 
-        $footer_menu_items = MenuItem::where('position', 'footer')
-            ->with(['submenus' => function($query) {
-                $query->where('is_active', 1)
-                    ->whereHas('module', function ($query) {
-                        $query->where('is_active', 1);
-                    })
-                    ->orderBy('order');
-            }])
-            ->whereNull('parent_id')
-            ->where('is_active', 1)
-            ->whereHas('module', function ($query) {
-                $query->where('is_active', 1);
-            })
-            ->orderBy('order')
-            ->get();
+            $footer_menu_items = MenuItem::where('position', 'footer')
+                ->with(['submenus' => function($query) {
+                    $query->where('is_active', 1)
+                        ->whereHas('module', function ($query) {
+                            $query->where('is_active', 1);
+                        })
+                        ->orderBy('order');
+                }])
+                ->whereNull('parent_id')
+                ->where('is_active', 1)
+                ->whereHas('module', function ($query) {
+                    $query->where('is_active', 1);
+                })
+                ->orderBy('order')
+                ->get();
 
-        $account_menu_items = MenuItem::where('position', 'account')
-            ->with(['submenus' => function($query) {
-                $query->where('is_active', 1)
-                    ->whereHas('module', function ($query) {
-                        $query->where('is_active', 1);
-                    })
-                    ->orderBy('order');
-            }])
-            ->whereNull('parent_id')
-            ->where('is_active', 1)
-            ->whereHas('module', function ($query) {
-                $query->where('is_active', 1);
-            })
-            ->orderBy('order')
-            ->get();
+            $account_menu_items = MenuItem::where('position', 'account')
+                ->with(['submenus' => function($query) {
+                    $query->where('is_active', 1)
+                        ->whereHas('module', function ($query) {
+                            $query->where('is_active', 1);
+                        })
+                        ->orderBy('order');
+                }])
+                ->whereNull('parent_id')
+                ->where('is_active', 1)
+                ->whereHas('module', function ($query) {
+                    $query->where('is_active', 1);
+                })
+                ->orderBy('order')
+                ->get();
+        } catch (\Exception $e) {
+            $menu_items = collect();
+
+            $footer_menu_items = collect();
+
+            $account_menu_items = collect();
+        }
 
         return array_merge(parent::share($request), [
             'menuItems' => $menu_items,

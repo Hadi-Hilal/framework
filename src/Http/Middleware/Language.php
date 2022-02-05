@@ -18,6 +18,9 @@ class Language
     public function handle($request, Closure $next)
     {
         $languages = app('languages');
+        if ($languages->count() == 0) {
+            return $next($request);
+        }
         $default_language = $languages->where('is_default', true)->first();
         $active_language = $default_language;
         if ($language = $languages->where('code_with_dash', request()->segment(1))->first()) {
