@@ -80,6 +80,32 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             $currencies = Currency::where('is_active', true)->orderBy('order')->get();
 
             $countries = Country::where('is_active', true)->orderBy('order')->orderBy('title')->get();
+
+            foreach ($modules as $module) {
+                $this->loadViewsFrom(base_path('modules/' . $module->folder . '/Views/' . $default_theme->folder), $module->folder);
+                $this->mergeConfigFrom(
+                    base_path('modules/' . $module->folder . '/Config/config.php'), $module->folder
+                );
+                $this->mergeConfigFrom(
+                    base_path('modules/' . $module->folder . '/Config/group.php'), 'UserConfig.' . $module->folder
+                );
+                $this->loadTranslationsFrom(
+                    base_path('modules/' . $module->folder . '/Lang'), $module->folder
+                );
+                $this->loadMigrationsFrom(base_path('modules/' . $module->folder . '/Migrations'));
+                if ($languages->contains('code_with_dash', request()->segment(1))) {
+                    Route::prefix(request()->segment(1))->group(function () use ($module) {
+                        Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
+                        Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
+                        Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
+                    });
+                } else {
+                    Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
+                    Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
+                    Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
+                }
+            }
+            $this->loadViewsFrom(base_path('themes/' . $default_theme->folder . '/Views'), 'Theme');
         } catch (\Exception $e) {
             $modules = collect([]);
 
@@ -115,32 +141,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->bind('countries', function () use ($countries) {
             return $countries;
         });
-
-        foreach ($modules as $module) {
-            $this->loadViewsFrom(base_path('modules/' . $module->folder . '/Views/' . $default_theme->folder), $module->folder);
-            $this->mergeConfigFrom(
-                base_path('modules/' . $module->folder . '/Config/config.php'), $module->folder
-            );
-            $this->mergeConfigFrom(
-                base_path('modules/' . $module->folder . '/Config/group.php'), 'UserConfig.' . $module->folder
-            );
-            $this->loadTranslationsFrom(
-                base_path('modules/' . $module->folder . '/Lang'), $module->folder
-            );
-            $this->loadMigrationsFrom(base_path('modules/' . $module->folder . '/Migrations'));
-            if ($languages->contains('code_with_dash', request()->segment(1))) {
-                Route::prefix(request()->segment(1))->group(function () use ($module) {
-                    Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
-                    Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
-                    Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
-                });
-            } else {
-                Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
-                Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
-                Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
-            }
-        }
-        $this->loadViewsFrom(base_path('themes/' . $default_theme->folder . '/Views'), 'Theme');
 
         $kernel = $this->app->make(Kernel::class);
 
