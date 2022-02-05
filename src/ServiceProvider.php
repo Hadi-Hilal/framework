@@ -83,7 +83,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         } catch (\Exception $e) {
             $modules = collect([]);
 
-            $default_theme = collect([]);
+            $default_theme = collect([
+                'id' => 1,
+                'folder' => 'Default'
+            ]);
 
             $languages = collect([]);
 
