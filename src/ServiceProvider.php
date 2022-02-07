@@ -68,70 +68,43 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot()
     {
-        try {
-            $modules = Module::where('is_active', true)->orderBy('is_core')->orderBy('folder')->get();
+        $modules = Module::where('is_active', true)->orderBy('is_core')->orderBy('folder')->get();
 
-            $default_theme = Theme::where('is_default', true)->first();
+        $default_theme = Theme::where('is_default', true)->first();
 
-            $languages = Language::where('is_active', true)->orderBy('order')->get();
+        $languages = Language::where('is_active', true)->orderBy('order')->get();
 
-            $user_groups = UserGroup::get();
+        $user_groups = UserGroup::get();
 
-            $currencies = Currency::where('is_active', true)->orderBy('order')->get();
+        $currencies = Currency::where('is_active', true)->orderBy('order')->get();
 
-            $countries = Country::where('is_active', true)->orderBy('order')->orderBy('title')->get();
+        $countries = Country::where('is_active', true)->orderBy('order')->orderBy('title')->get();
 
-            foreach ($modules as $module) {
-                $this->loadViewsFrom(base_path('modules/' . $module->folder . '/Views/' . $default_theme->folder), $module->folder);
-                $this->mergeConfigFrom(
-                    base_path('modules/' . $module->folder . '/Config/config.php'), $module->folder
-                );
-                $this->mergeConfigFrom(
-                    base_path('modules/' . $module->folder . '/Config/group.php'), 'UserConfig.' . $module->folder
-                );
-                $this->loadTranslationsFrom(
-                    base_path('modules/' . $module->folder . '/Lang'), $module->folder
-                );
-                $this->loadMigrationsFrom(base_path('modules/' . $module->folder . '/Migrations'));
-                if ($languages->contains('code_with_dash', request()->segment(1))) {
-                    Route::prefix(request()->segment(1))->group(function () use ($module) {
-                        Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
-                        Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
-                        Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
-                    });
-                } else {
+        foreach ($modules as $module) {
+            $this->loadViewsFrom(base_path('modules/' . $module->folder . '/Views/' . $default_theme->folder), $module->folder);
+            $this->mergeConfigFrom(
+                base_path('modules/' . $module->folder . '/Config/config.php'), $module->folder
+            );
+            $this->mergeConfigFrom(
+                base_path('modules/' . $module->folder . '/Config/group.php'), 'UserConfig.' . $module->folder
+            );
+            $this->loadTranslationsFrom(
+                base_path('modules/' . $module->folder . '/Lang'), $module->folder
+            );
+            $this->loadMigrationsFrom(base_path('modules/' . $module->folder . '/Migrations'));
+            if ($languages->contains('code_with_dash', request()->segment(1))) {
+                Route::prefix(request()->segment(1))->group(function () use ($module) {
                     Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
                     Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
                     Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
-                }
+                });
+            } else {
+                Route::middleware(['web', Frontend::class, LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->group(base_path('modules/' . $module->folder . '/Routes/frontend.php'));
+                Route::middleware(['web', 'auth:sanctum', Backend::class, LanguageMiddleware::class, HasAdminAccess::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix(config('app.admin_url', 'admin'))->name('admin.')->group(base_path('modules/' . $module->folder . '/Routes/admin.php'));
+                Route::middleware(['api', LanguageMiddleware::class])->namespace('Modules\\' . $module->folder . '\\Controllers')->prefix('api/v2')->name('api.v2.')->group(base_path('modules/' . $module->folder . '/Routes/api.php'));
             }
-            $this->loadViewsFrom(base_path('themes/' . $default_theme->folder . '/Views'), 'Theme');
-        } catch (\Exception $e) {
-            $modules = collect([]);
-
-            $default_theme = collect([
-                'id' => 1,
-                'folder' => 'Default'
-            ]);
-
-            $languages = collect([collect([
-                'id' => 1,
-                'title' => 'English (US)',
-                'language_code' => 'en',
-                'country_code' => 'US',
-                'direction' => 'ltr',
-                'is_default' => 1,
-                'is_active' => 1,
-                'code_with_dash' => 'en-US',
-                'code_with_underscore' => 'en_US'
-            ])]);
-
-            $user_groups = collect([]);
-
-            $currencies = collect([]);
-
-            $countries = collect([]);
         }
+        $this->loadViewsFrom(base_path('themes/' . $default_theme->folder . '/Views'), 'Theme');
 
         $this->app->bind('modules', function () use ($modules) {
             return $modules;
