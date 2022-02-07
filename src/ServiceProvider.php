@@ -114,19 +114,17 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 'folder' => 'Default'
             ]);
 
-            $languages = collect([
-                [
-                    'id' => 1,
-                    'title' => 'English (US)',
-                    'language_code' => 'en',
-                    'country_code' => 'US',
-                    'direction' => 'ltr',
-                    'is_default' => 1,
-                    'is_active' => 1,
-                    'code_with_dash' => 'en-US',
-                    'code_with_underscore' => 'en_US'
-                ]
-            ]);
+            $languages = collect([collect([
+                'id' => 1,
+                'title' => 'English (US)',
+                'language_code' => 'en',
+                'country_code' => 'US',
+                'direction' => 'ltr',
+                'is_default' => 1,
+                'is_active' => 1,
+                'code_with_dash' => 'en-US',
+                'code_with_underscore' => 'en_US'
+            ])]);
 
             $user_groups = collect([]);
 
