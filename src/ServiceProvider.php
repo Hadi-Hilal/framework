@@ -123,6 +123,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                     'direction' => 'ltr',
                     'is_default' => 1,
                     'is_active' => 1,
+                    'code_with_dash' => 'en-US',
+                    'code_with_underscore' => 'en_US'
                 ]
             ]);
 
