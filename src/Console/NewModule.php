@@ -120,6 +120,7 @@ class NewModule extends Command
 
             File::put(base_path('modules/' . $params['folder'] . '/Routes/frontend.php'), $route);
             File::put(base_path('modules/' . $params['folder'] . '/Routes/admin.php'), $route);
+            File::put(base_path('modules/' . $params['folder'] . '/Routes/console.php'), $route);
             File::put(base_path('modules/' . $params['folder'] . '/Routes/api.php'), $route);
 
 
