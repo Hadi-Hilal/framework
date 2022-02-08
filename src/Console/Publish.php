@@ -52,10 +52,10 @@ class Publish extends Command
                     if (!is_array($phrases)) {
                         $phrases = [];
                     }
-                    if (!File::isDirectory(resource_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath()))) {
-                        File::makeDirectory(resource_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath()), 0755, true);
+                    if (!File::isDirectory(base_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath()))) {
+                        File::makeDirectory(base_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath()), 0755, true);
                     }
-                    File::put(resource_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath() . '/' . $file->getFilename()), "<?php\n\nreturn json_decode('" . json_encode($phrases, JSON_HEX_APOS) . "', true);\n");
+                    File::put(base_path('lang/vendor/' . $module->folder . '/' . $file->getRelativePath() . '/' . $file->getFilename()), "<?php\n\nreturn json_decode('" . json_encode($phrases, JSON_HEX_APOS) . "', true);\n");
                 }
             }
             $this->info('Publishing configuration files of module: ' . $module->folder);
